@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine?</title>
+    <meta name="description" content="A special Valentine's Day question for my special person.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Pacifico&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #ffc0cb;
+            /* Light Pink */
+            font-family: 'Indie Flower', cursive;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            user-select: none;
+        }
+
+        #heart-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            top: -10vh;
+            color: #ff6b81;
+            /* Darker pink for hearts */
+            font-size: 2rem;
+            animation: fall linear forwards;
+            opacity: 0.8;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            max-width: 90%;
+            width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            border: 4px solid #000;
+            transition: opacity 0.5s ease;
+        }
+
+        .media-container {
+            width: 150%;
+            max-width: 300px;
+            aspect-ratio: 1/1;
+            overflow: hidden;
+            border: 4px solid #000;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 3rem;
+            color: #000;
+            margin: 10px 0;
+            line-height: 1.2;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 40px;
+            margin-top: 20px;
+            position: relative;
+            width: 100%;
+            justify-content: center;
+            height: 80px;
+        }
+
+        button {
+            padding: 10px 40px;
+            font-size: 2rem;
+            font-family: 'Indie Flower', cursive;
+            border: 4px solid #000;
+            background: #fff;
+            color: #000;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            font-weight: bold;
+            box-shadow: 5px 5px 0px #000;
+        }
+
+        button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 7px 7px 0px #000;
+            background: #ffe4e1;
+        }
+
+        button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0px #000;
+        }
+
+        #no-btn.moving {
+            position: fixed;
+            z-index: 200;
+        }
+
+        #music-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            background: white;
+            border: 3px solid #000;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Indie Flower', cursive;
+            box-shadow: 3px 3px 0px #000;
+        }
+
+        /* YouTube iframe hidden */
+        #player-container {
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+
+        /* PHASE 2 STYLES */
+        #phase-2 {
+            display: none;
+            /* Hidden initially */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .click-area {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .click-area:active {
+            transform: scale(0.95);
+        }
+
+        .click-area img {
+            width: 300px;
+            border: 4px solid #000;
+            border-radius: 10px;
+            box-shadow: 5px 5px 0px #000;
+        }
+
+        .banana-bar-container {
+            width: 40px;
+            height: 300px;
+            border: 4px solid #000;
+            border-radius: 20px;
+            background: #fff;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 5px 5px 0px #000;
+        }
+
+        .banana-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            /* Starts at 0 */
+            background-color: #ffe135;
+            /* Banana Yellow */
+            transition: height 0.3s ease-out;
+            border-top: 2px solid #000;
+        }
+
+        .floating-message {
+            position: fixed;
+            font-family: 'Pacifico', cursive;
+            color: #d6336c;
+            font-size: 2rem;
+            pointer-events: none;
+            animation: floatUp 2s forwards;
+            text-shadow: 2px 2px 0px #fff;
+            z-index: 1000;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1.2);
+            }
+
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Phase 3 Final Message */
+        #phase-3 {
+            display: none;
+        }
+
+        /* --- GAME STYLES --- */
+        #game-screen {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: #333;
+        }
+
+        #game-map {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        #player-sprite {
+            position: absolute;
+            font-size: 3rem;
+            z-index: 10;
+            transition: top 0.1s, left 0.1s;
+            /* Smooth movement */
+        }
+
+        .door {
+            position: absolute;
+            background-color: #8b4513;
+            border: 2px solid #5a2d0c;
+        }
+
+        .gallery-item {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border: 5px solid #fff;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            background: #eee;
+            overflow: hidden;
+        }
+
+        .interactable {
+            position: absolute;
+            cursor: pointer;
+            z-index: 5;
+            text-align: center;
+        }
+
+        .interactable:hover {
+            transform: scale(1.1);
+        }
+
+        .room-sign {
+            position: absolute;
+            background: #8b4513;
+            color: #fff;
+            padding: 4px 8px;
+            border: 2px solid #3e1e05;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-family: 'Indie Flower', cursive;
+            pointer-events: none;
+            z-index: 20;
+            text-align: center;
+            white-space: nowrap;
+            box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+            font-weight: bold;
+        }
+
+        #dialog-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border: 4px solid #000;
+            border-radius: 10px;
+            z-index: 100;
+            text-align: center;
+            min-width: 300px;
+            font-family: 'Indie Flower', cursive;
+            font-size: 1.5rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        #dialog-close-btn,
+        #next-reason-btn {
+            margin-top: 15px;
+            padding: 5px 15px;
+            font-size: 1rem;
+            border: 2px solid #000;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .love-letter-mode {
+            width: 90vw !important;
+            max-width: 600px !important;
+            height: 90vh !important;
+            max-height: 90vh !important;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            font-size: 1.2rem !important;
+            z-index: 2000 !important;
+            /* On top of everything */
+            box-sizing: border-box;
+            background: white;
+            border: 4px solid black;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        /* Mobile Controls */
+        #mobile-controls {
+            display: none;
+            /* Hidden by default on desktop */
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1000;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 10px;
+            border-radius: 50%;
+        }
+
+        .dpad-row {
+            display: flex;
+            gap: 5px;
+        }
+
+        .dpad-btn {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            border: 2px solid #000;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        }
+
+        .dpad-btn:active {
+            background: #ffe4e1;
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 768px) {
+
+            /* Text Scaling */
+            h1 {
+                font-size: 2rem;
+                margin: 5px 0;
+            }
+
+            h2 {
+                font-size: 1.8rem !important;
+            }
+
+            p {
+                font-size: 1.2rem !important;
+            }
+
+            /* Buttons */
+            button {
+                padding: 10px 20px;
+                font-size: 1.5rem;
+                border-width: 3px;
+            }
+
+            .buttons {
+                height: auto;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+
+            /* Phase 2 Adjustments */
+            .click-area img {
+                width: 200px;
+            }
+
+            .banana-bar-container {
+                height: 200px;
+            }
+
+            /* Mobile Controls */
+            #mobile-controls {
+                display: flex;
+            }
+
+            /* Adjust game card size for mobile */
+            .card {
+                width: 95vw;
+                padding: 15px;
+                max-width: 100%;
+            }
+
+            #phase-3 {
+                width: 100% !important;
+                height: 70vh !important;
+                /* Slightly smaller to fit D-Pad comfortably */
+                border-width: 2px;
+            }
+
+            #player-sprite {
+                font-size: 2rem;
+                /* Smaller monkey on mobile */
+            }
+
+            /* Move music button out of the way */
+            #music-toggle {
+                bottom: auto;
+                top: 10px;
+                right: 10px;
+                padding: 5px 10px;
+                font-size: 0.8rem;
+                border-width: 2px;
+                box-shadow: 2px 2px 0px #000;
+            }
+
+            /* Love Letter Mobile */
+            .love-letter-mode {
+                width: 95vw !important;
+                height: 85vh !important;
+                font-size: 1rem !important;
+                /* Smaller text for letter */
+                padding: 15px;
+            }
+
+            /* Dialog Box Mobile */
+            #dialog-box {
+                min-width: 250px;
+                width: 80%;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="heart-container"></div>
+
+    <div id="player-container">
+        <div id="player"></div>
+    </div>
+
+    <!-- PHASE 1: The Question -->
+    <div class="card" id="phase-1">
+        <div class="media-container">
+            <video src="./GIF/CapuMonkey.mp4" autoplay loop muted playsinline>
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <h1>Will You Be My VALENTINE?</h1>
+        <div class="buttons" id="btn-container">
+            <button id="yes-btn">Yes</button>
+            <button id="no-btn">No</button>
+        </div>
+    </div>
+
+    <!-- PHASE 2: The Banana Bar Game -->
+    <!-- PHASE 2: The Banana Bar Game -->
+    <div class="card" id="phase-2">
+        <h2 style="font-family: 'Pacifico', cursive; margin-bottom: 20px; font-size: 2.5rem;">How much do you love me?
+        </h2>
+
+        <div style="display: flex; gap: 40px; align-items: center; justify-content: center;">
+            <div class="click-area" onclick="handleMonkeyClick(event)">
+                <img src="./images/MonkeyHeart.png" alt="Click Me!">
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                <div style="font-size: 2rem;">🍌</div>
+                <div class="banana-bar-container">
+                    <div class="banana-fill" id="banana-bar"></div>
+                </div>
+            </div>
+        </div>
+
+        <p style="font-size: 1.5rem; margin-top: 20px; font-weight: bold;">Click Me to fill me with your love ❤️</p>
+    </div>
+
+    <!-- PHASE 3: The 2D Love Game -->
+    <div class="card" id="phase-3"
+        style="display: none; height: 600px; width: 600px; padding: 0; overflow: hidden; position: relative; border: 4px solid #000;">
+        <div id="game-screen">
+            <!-- Game Map Layer -->
+            <div id="game-map"></div>
+
+            <!-- Player -->
+            <div id="player-sprite">🐵</div>
+
+            <!-- Mobile Controls -->
+            <div id="mobile-controls">
+                <div class="dpad-row">
+                    <button id="btn-up" class="dpad-btn">⬆️</button>
+                </div>
+                <div class="dpad-row">
+                    <button id="btn-left" class="dpad-btn">⬅️</button>
+                    <button id="btn-down" class="dpad-btn">⬇️</button>
+                    <button id="btn-right" class="dpad-btn">➡️</button>
+                </div>
+            </div>
+
+            <!-- UI Layer -->
+            <div id="game-ui">
+                <div id="dialog-box" class="hidden">
+                    <h3 id="dialog-title" class="hidden"
+                        style="font-family: 'Pacifico', cursive; margin-top: 0; color: #d6336c;">300 Reasons Why I Love
+                        You</h3>
+                    <p id="dialog-text"></p>
+                    <button id="dialog-close-btn" onclick="closeDialog()">Close</button>
+                    <button id="next-reason-btn" class="hidden" onclick="nextReason()">Next Reason ❤️</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Assets -->
+    <div style="display: none;">
+        <!-- Preload images if needed -->
+    </div>
+
+    <button id="music-toggle">🎵 Music: Off</button>
+
+    <script>
+        // --- Shared Data ---
+        const messages = [
+            "I love you",
+            "Be mine forever",
+            "You complete me",
+            "My heart is yours",
+            "Together forever",
+            "You're my everything",
+            "Soulmates",
+            "My better half",
+            "Love of my life",
+            "Always & Forever"
+        ];
+        const reasons = [
+            "Your pretty brown boba eyes", "Your big beautiful lips", "Your smile", "The spark in your eyes when you smile",
+            "That little crease in your nose when you smile", "Your nose", "The shape of your face", "Your silky hair",
+            "Your eyebrows", "Your hands I want to hold badly", "Your kindness", "Your understanding", "Your big heart full of love",
+            "Your humour", "Our compatible tastes", "Your wholesomeness", "Your purity", "Your selflessness", "Being my soulmate",
+            "Your loyalty", "Your spontaneity", "Your craziness", "Your listening skills", "Your ability to make me feel better",
+            "Your ability to take away all my problems", "Your therapeutic skills", "Your ambition", "Your playfullness",
+            "Your freakiness", "Your beauty", "Your love for me", "Your wifey features", "Your dedication", "Your obedience",
+            "The drive you give me to be a better man", "You dont judge me", "You accept me for who I am", "You show me unconditional love",
+            "You support me in my tough moments", "Your dedication to us", "Your voice", "Being yourself", "Being silly",
+            "The cute stickers you make of me", "The obscene stickers you send me", "Your intelligence", "Your patience",
+            "Your strength", "Your feminine energy", "You give me your all", "You shower me with love", "Understanding my feelings",
+            "Listening to my day", "Enduring all my yapping", "Talking to me all day", "Your clinginess", "How you prioritise me",
+            "How special you make me feel", "Your love for chicken", "Your cute personas", "How you think youre a mermaid",
+            "How you think youre a vampire", "How you think youre an alien", "How you think youre a caterpillar", "How you are mine and mine only",
+            "Your obsession with ghosts", "Your obsession with horror movies", "Your love for Americano coffee", "Your smoking hot body",
+            "Your love for fruits", "Your love for nuts", "How you like dogs", "The music you listen to (Lana Del Ray)",
+            "The tiktoks you send me", "The reels you send me", "The love letters you write for me", "Your romanticism",
+            "The goofy faces you make in some of your photos", "Your creativity", "Always doing what I ask you to do",
+            "How you view me", "How you think of me", "How you feel about me", "How you improved my life", "How you calmed my anxiety",
+            "You existing", "You being in my life", "Your faithfulness", "Your energy", "Your honesty", "Your truthfulness",
+            "How I can trust you with my life", "How you comfort me", "Your uniqueness", "Your appreciation", "How you believe in me",
+            "Your humility", "How you know and remember everything about me", "Your charm", "Your soul", "Your mindset",
+            "Your compliments", "How you made me go from thinking Im ugly to believing Im handsome", "Your warmth", "Your respect",
+            "Your reassurance whenever I need them", "Our bond", "Your self care", "Your efforts", "Your skin", "All your birthmarks",
+            "All your scars", "All your flaws", "Your advice", "Your emotional maturity", "You are cute", "You are sweet",
+            "You are funny", "You are amazing", "You are freaky", "You always entertain me", "How talking to you became my favourite activity",
+            "Your forgiveness", "How you look past my flaws", "You are perfect", "How you always make me feel loved", "Your worthiness",
+            "You bring out my inner child", "You bring out my freak", "You are Gods best gift to me", "Your talents",
+            "How you make me feel secure", "Your homebodiness", "You are my world", "You are the woman I prayed for",
+            "You are the woman I dreamed of", "You are the ideal woman I had in mind", "Everything about you is my type",
+            "How compatible we are", "Our soultie", "Your prayers for me", "Our all day talks", "Your actions", "Your sleeping video",
+            "You make me feel like I matter", "How I belong to you", "You being mine", "Your first name Yumissa",
+            "How Ill change your last name to mine", "Your words of affirmation", "Your company", "You forgive my mistakes",
+            "All the pictures you sent me", "You inspire me", "Your mind", "Your sensitivity", "Your fragility",
+            "How you stalk my tiktok reposts", "Your obsession with me", "Your psycopathic side", "Your sweet little hands",
+            "Your neck", "Your belly", "Your belly button", "Your hips", "Your waist", "Your thighs", "Your natural beauty",
+            "The booby priviledges you give me", "How you baby me", "Always caring about me", "Asking if I eat", "Checking up on me",
+            "Your massage skills Ill soon get to enjoy", "How I will get to smell your natural body odor",
+            "How I will smell you with your sweet Black ophium perfumes", "How I will get to see you with my own eyes",
+            "How I will get to touch you", "The life we will have together", "You will be my wife", "Your fashion sense",
+            "Your kisses in the future", "Your hugs in the future", "Your cuddles in the future", "Your culture", "Your touch",
+            "The dates we will have together", "Our future", "How you are mine", "How I am yours", "Your baking skills",
+            "Your morals", "The sacrifices you made for me", "Your intentions", "Your insight", "Your encouragement", "Your hope",
+            "Your strength", "Your gratitude", "You ❤️❤️❤️❤️❤️❤️", "Your joyfullness around me", "Your perspective", "Your imagination",
+            "Your empathy", "Your sympathy", "The time you dedicate for me", "Your friendship", "Your softness",
+            "How you protect my feelings", "Your behaviour", "Your etiquette", "Your confidence with me", "Your presence",
+            "You are my girlfriend", "You are my therapist", "You will be my barber", "You will be my dermatologist",
+            "You will be my chef", "You will be my massager", "Your accountability", "Your focus", "You are an angel",
+            "How I am the man you prayed for", "It was our destiny to be together", "Youre amazing", "Youre wonderful",
+            "Your depth", "You are my other half", "You are my best friend", "You are my home", "You bring me peace",
+            "How you let me be myself", "How you love me for me", "You are my hope", "Your reliability", "Your chaos",
+            "All your personalities", "Your eyes I could drown in them", "Your lips I want to kiss them", "Your care",
+            "Your religious beliefs", "Our alignment", "We were made for each other", "Your insecurities you shouldnt have",
+            "Your perfection", "For who you are", "Your height", "Your weight", "How you love daisies", "How you are a sunflower woman",
+            "How you love the beach", "Your passion for hiking", "Your love for donut", "How you like sweet stuff",
+            "You are the sweetest", "How you like sour", "How you like spicy", "How you like Zara Gardener perfume",
+            "How you like Golden retrievers", "You gave me appreciation", "You opened my heart", "You are the warmth in a cold world",
+            "You are the light in darkness", "Your independence", "Your courage", "Your never ending love",
+            "The spark you light up in my heart", "The moments we have together", "Your perversions", "How I will get to show you the world",
+            "How you will experience many things with me for the first time", "Your innocence", "Your sweat", "Your glowing skin",
+            "The pictures you send me whenever you poop and you are making all sorts of faces",
+            "The sense of pride I feel knowing I turned your life for the better", "You being my human medicine",
+            "The impact we had in each others life", "How you take care of yourself", "When you tell me everything about yourself",
+            "Your transparency", "How you inform me about every detail of your life", "How many things we have in common",
+            "You are a female version of me", "With every passing day I see how much deeper I fall in love with you",
+            "I never get bored of you", "Your green flags", "How I see you as a perfect wife", "Your maturity", "Your red flags",
+            "Your looks", "Your mindfullness", "Your soul that is joined with mine", "You are my first thought of the day",
+            "You are my last thought of the day", "The dreams I have about you", "The life I have with you and Ill get to live with you",
+            "Your ideals", "Our inside jokes and words", "You being absoperlove", "You are my girlfriend forever."
+        ];
+
+        const gameImages = [
+            "Screenshot 2026-02-13 201114.png", "Screenshot 2026-02-13 201209.png", "Screenshot 2026-02-13 203720.png",
+            "Screenshot 2026-02-13 203731.png", "Screenshot 2026-02-13 203826.png", "Screenshot 2026-02-13 203840.png",
+            "Screenshot 2026-02-13 203849.png", "Screenshot 2026-02-13 203858.png", "Screenshot 2026-02-13 203908.png",
+            "Screenshot 2026-02-13 203921.png"
+        ];
+
+        let clickCount = 0;
+        const maxClicks = 10;
+        let reasonsIndex = 0;
+
+        // --- Elements ---
+        const phase1 = document.getElementById('phase-1');
+        const phase2 = document.getElementById('phase-2');
+        const phase3 = document.getElementById('phase-3');
+        const bananaBar = document.getElementById('banana-bar');
+
+        const noBtn = document.getElementById('no-btn');
+        const yesBtn = document.getElementById('yes-btn');
+        const musicBtn = document.getElementById('music-toggle');
+
+        // --- Phase 1 Logic ---
+        let noClickCount = 0;
+
+        yesBtn.addEventListener('click', startPhase2);
+        noBtn.addEventListener('click', handleNo);
+        musicBtn.addEventListener('click', toggleMusic);
+
+        function handleNo() {
+            noClickCount++;
+            if (noClickCount >= 5) {
+                noBtn.innerText = "Yes";
+                noBtn.id = "yes-btn-2";
+                noBtn.classList.remove('moving');
+                noBtn.style.position = 'static';
+                noBtn.style.transform = 'none';
+                noBtn.style.left = 'auto';
+                noBtn.style.top = 'auto';
+                noBtn.style.zIndex = 'auto';
+
+                noBtn.removeEventListener('click', handleNo);
+                noBtn.addEventListener('click', startPhase2);
+                return;
+            }
+            // Move No Button
+            const maxX = window.innerWidth - noBtn.offsetWidth - 50;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 50;
+            const x = Math.max(20, Math.random() * maxX);
+            const y = Math.max(20, Math.random() * maxY);
+            noBtn.classList.add('moving');
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+        }
+
+        function startPhase2() {
+            phase1.style.display = 'none';
+            phase2.style.display = 'flex';
+        }
+
+        // --- Phase 2 Logic ---
+        function handleMonkeyClick(e) {
+            if (clickCount >= maxClicks) return;
+
+            clickCount++;
+
+            // Update Bar
+            const percentage = (clickCount / maxClicks) * 100;
+            bananaBar.style.height = percentage + '%';
+
+            // Show Message
+            showFloatingMessage(e.clientX, e.clientY);
+
+            // Check Win
+            if (clickCount >= maxClicks) {
+                setTimeout(() => {
+                    phase2.style.display = 'none';
+                    phase3.style.display = 'block'; // Show Game
+                    startGame();
+                    // Celebration
+                    for (let i = 0; i < 50; i++) setTimeout(createHeart, i * 50);
+                }, 500);
+            }
+        }
+
+        function showFloatingMessage(x, y) {
+            const msg = document.createElement('div');
+            msg.classList.add('floating-message');
+            const text = messages[Math.floor(Math.random() * messages.length)];
+            msg.innerText = text;
+
+            const offsetX = (Math.random() - 0.5) * 100;
+            const offsetY = (Math.random() - 0.5) * 100;
+
+            msg.style.left = (x + offsetX) + 'px';
+            msg.style.top = (y + offsetY) + 'px';
+
+            document.body.appendChild(msg);
+
+            setTimeout(() => {
+                msg.remove();
+            }, 2000);
+        }
+
+        // --- Heart Animation ---
+        const heartContainer = document.getElementById('heart-container');
+        const emojis = ['❤️', '💖', '💘', '💝', '💓', '💗', '💞'];
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 3 + 's';
+            heart.style.fontSize = Math.random() * 1.5 + 1 + 'rem';
+            heartContainer.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, 6000);
+        }
+        setInterval(createHeart, 200);
+
+        // --- YouTube Audio ---
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        var isMuted = true;
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '390',
+                width: '640',
+                videoId: 'jP6eEKrghGI',
+                playerVars: {
+                    'autoplay': 1, 'controls': 0, 'loop': 1, 'playlist': 'jP6eEKrghGI', 'mute': 1, 'playsinline': 1
+                },
+                events: { 'onReady': onPlayerReady }
+            });
+        }
+        function onPlayerReady(event) {
+            event.target.playVideo();
+            if (player.isMuted()) { isMuted = true; musicBtn.innerText = "🎵 Music: Off"; }
+        }
+        function toggleMusic() {
+            if (!player) return;
+            if (isMuted) {
+                player.unMute(); player.setVolume(100);
+                musicBtn.innerText = "🎵 Music: On"; isMuted = false;
+            } else {
+                player.mute(); musicBtn.innerText = "🎵 Music: Off"; isMuted = true;
+            }
+        }
+
+        // --- GAME LOGIC ---
+        const gameMap = document.getElementById('game-map');
+        const playerSprite = document.getElementById('player-sprite');
+        const dialogBox = document.getElementById('dialog-box');
+        const dialogText = document.getElementById('dialog-text');
+        const nextReasonBtn = document.getElementById('next-reason-btn');
+        let playerX = 280; // Center (600/2 - 20)
+        let playerY = 280;
+        let currentRoom = 'center';
+
+        let mobileDirection = null; // null, 'up', 'down', 'left', 'right'
+        let gameLoopId;
+
+        function startGame() {
+            renderRoom();
+            document.addEventListener('keydown', handleInput);
+            // Setup mobile buttons
+            setupMobileControls();
+            // Start loop
+            if (!gameLoopId) gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        function gameLoop() {
+            if (mobileDirection) {
+                movePlayer(mobileDirection);
+            }
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        function handleInput(e) {
+            // e.preventDefault(); // allow default for now unless needed
+            const speed = 15;
+            if (e.key === 'w' || e.key === 'ArrowUp') movePlayer('up');
+            if (e.key === 's' || e.key === 'ArrowDown') movePlayer('down');
+            if (e.key === 'a' || e.key === 'ArrowLeft') movePlayer('left');
+            if (e.key === 'd' || e.key === 'ArrowRight') movePlayer('right');
+        }
+
+        function movePlayer(dir) {
+            // Adjust speed for mobile loop vs keyboard press
+            // Keyboard is repeating events, mobile loop runs every frame (~60fps).
+            // Speed should likely be lower for loop (~5px) and same for keyboard if we use loop?
+            // Or keep separate speeds.
+            // Let's use 10 for both for now to be safe.
+            const speed = 10;
+
+            let nextX = playerX;
+            let nextY = playerY;
+
+            if (dir === 'up') nextY -= speed;
+            if (dir === 'down') nextY += speed;
+            if (dir === 'left') nextX -= speed;
+            if (dir === 'right') nextX += speed;
+
+            // Boundaries & Room Transitions
+            if (currentRoom === 'center') {
+                if (nextY < 0) {
+                    if (nextX > 250 && nextX < 350) {
+                        currentRoom = 'north'; playerY = 550; renderRoom(); return;
+                    } else nextY = 0;
+                }
+                if (nextY > 560) {
+                    if (nextX > 250 && nextX < 350) {
+                        currentRoom = 'south'; playerY = 50; renderRoom(); return;
+                    } else nextY = 560;
+                }
+                if (nextX > 560) {
+                    if (nextY > 250 && nextY < 350) {
+                        currentRoom = 'east'; playerX = 50; renderRoom(); return;
+                    } else nextX = 560;
+                }
+                if (nextX < 0) {
+                    if (nextY > 250 && nextY < 350) {
+                        currentRoom = 'west'; playerX = 550; renderRoom(); return;
+                    } else nextX = 0;
+                }
+            }
+            else if (currentRoom === 'north') {
+                if (nextY > 560) { currentRoom = 'center'; playerY = 50; renderRoom(); return; }
+                if (nextY < 0) { currentRoom = 'north2'; playerY = 550; renderRoom(); return; }
+                if (nextX < 0) nextX = 0; if (nextX > 560) nextX = 560;
+            }
+            else if (currentRoom === 'north2') {
+                if (nextY > 560) { currentRoom = 'north'; playerY = 50; renderRoom(); return; }
+                if (nextY < 0) nextY = 0;
+                if (nextX < 0) nextX = 0; if (nextX > 560) nextX = 560;
+            }
+            else if (currentRoom === 'south') {
+                if (nextY < 0) { currentRoom = 'center'; playerY = 550; renderRoom(); return; }
+                if (nextY > 560) nextY = 560; if (nextX < 0) nextX = 0; if (nextX > 560) nextX = 560;
+            }
+            else if (currentRoom === 'east') {
+                if (nextX < 0) { currentRoom = 'center'; playerX = 550; renderRoom(); return; }
+                if (nextY < 0) nextY = 0; if (nextY > 560) nextY = 560; if (nextX > 560) nextX = 560;
+            }
+            else if (currentRoom === 'west') {
+                if (nextX > 560) { currentRoom = 'center'; playerX = 50; renderRoom(); return; }
+                if (nextY < 0) nextY = 0; if (nextY > 560) nextY = 560; if (nextX < 0) nextX = 0;
+            }
+
+            playerX = nextX;
+            playerY = nextY;
+            updatePlayerPos();
+        }
+
+        function setupMobileControls() {
+            const btns = {
+                'btn-up': 'up',
+                'btn-down': 'down',
+                'btn-left': 'left',
+                'btn-right': 'right'
+            };
+
+            for (const [id, dir] of Object.entries(btns)) {
+                const btn = document.getElementById(id);
+                if (!btn) continue;
+
+                const start = (e) => {
+                    if (e.cancelable) e.preventDefault();
+                    mobileDirection = dir;
+                };
+                const end = (e) => {
+                    if (e.cancelable) e.preventDefault();
+                    if (mobileDirection === dir) mobileDirection = null;
+                };
+
+                btn.addEventListener('mousedown', start);
+                btn.addEventListener('mouseup', end);
+                btn.addEventListener('touchstart', start, { passive: false });
+                btn.addEventListener('touchend', end, { passive: false });
+                // Ensure if finger leaves button 
+                btn.addEventListener('mouseleave', end);
+            }
+        }
+
+
+        function updatePlayerPos() {
+            playerSprite.style.left = playerX + 'px';
+            playerSprite.style.top = playerY + 'px';
+        }
+
+        function renderRoom() {
+            gameMap.innerHTML = ''; // Clear items
+            gameMap.style.backgroundImage = ''; // Reset background image
+            gameMap.style.backgroundColor = ''; // Reset background color
+
+            if (currentRoom === 'center') {
+                // Wood Floor
+                gameMap.style.backgroundImage = 'url("./images/wood_floor.png")';
+                gameMap.style.backgroundSize = '100px 100px'; // Tile the floor
+
+                // Draw Doors
+                createDoor('top');
+                createDoor('bottom');
+                createDoor('right');
+                createDoor('left');
+
+                // Fireplace (Left Wall, above West door)
+                // West door is at top: 250px. So place this above it.
+                const fireplace = document.createElement('div');
+                fireplace.style.position = 'absolute';
+                fireplace.style.right = '0px';
+                fireplace.style.top = '100px';
+                fireplace.style.width = '120px';
+                fireplace.style.height = '120px';
+                fireplace.style.zIndex = '5';
+                fireplace.innerHTML = '<img src="./images/fireplace.png" style="width:100%; height:100%; object-fit:contain;">';
+                gameMap.appendChild(fireplace);
+
+                // Windows (Bigger and repositioned)
+                // Window 1: Top Left (Keep around there but bigger)
+                const window1 = document.createElement('div');
+                window1.style.position = 'absolute';
+                window1.style.left = '80px';
+                window1.style.top = '20px';
+                window1.style.width = '120px';
+                window1.style.height = '120px';
+                window1.innerHTML = '<img src="./images/window.png" style="width:100%; height:100%; object-fit:contain;">';
+                gameMap.appendChild(window1);
+
+                // Window 2: Bottom Right
+                const window2 = document.createElement('div');
+                window2.style.position = 'absolute';
+                window2.style.right = '20px';
+                window2.style.bottom = '20px';
+                window2.style.width = '120px';
+                window2.style.height = '120px';
+                window2.innerHTML = '<img src="./images/window.png" style="width:100%; height:100%; object-fit:contain;">';
+                gameMap.appendChild(window2);
+
+                // Signs
+                const createSign = (x, y, text, align = 'center') => {
+                    const s = document.createElement('div');
+                    s.className = 'room-sign';
+                    s.innerHTML = text;
+                    s.style.left = x;
+                    s.style.top = y;
+                    if (align === 'center') s.style.transform = 'translate(-50%, -50%)';
+                    if (align === 'left') s.style.transform = 'translateY(-50%)'; // align left edge
+                    gameMap.appendChild(s);
+                };
+
+                // North (Gallery) - Centered below top door
+                createSign('50%', '80px', 'Gallery 🖼️');
+
+                // South (300 Reasons) - Centered above bottom door
+                createSign('50%', '520px', '300 Reasons Why I Love You🎁');
+
+                // West (Garden) - To the right of left door
+                createSign('80px', '50%', 'Garden 🌳');
+
+                // East (Love Letter) - To the left of right door
+                createSign('520px', '50%', 'Love Letter 💌');
+            }
+            else if (currentRoom === 'north' || currentRoom === 'north2') {
+                gameMap.style.backgroundColor = '#fff0f5'; // gallery wall
+
+                // Red Carpet
+                const carpet = document.createElement('div');
+                carpet.style.position = 'absolute';
+                carpet.style.left = '250px';
+                carpet.style.top = '0';
+                carpet.style.width = '100px';
+                carpet.style.height = '100%';
+                carpet.style.backgroundColor = '#b22222'; // Firebrick red
+                carpet.style.borderLeft = '4px solid #ffd700'; // Gold trim
+                carpet.style.borderRight = '4px solid #ffd700';
+                gameMap.appendChild(carpet);
+
+                // Gallery Logic
+                const offset = currentRoom === 'north' ? 0 : 6;
+                const limit = 6; // max per room
+
+                // Slots: L1 (50, 50), R1 (400, 50), L2 (50, 230), R2 (400, 230), L3 (50, 410), R3 (400, 410)
+                const positions = [
+                    { x: 50, y: 50 }, { x: 400, y: 50 },
+                    { x: 50, y: 230 }, { x: 400, y: 230 },
+                    { x: 50, y: 410 }, { x: 400, y: 410 }
+                ];
+
+                for (let i = 0; i < limit; i++) {
+                    const imgIndex = offset + i;
+                    if (imgIndex >= gameImages.length) break;
+
+                    const pos = positions[i];
+                    const el = document.createElement('div');
+                    el.className = 'gallery-item';
+                    el.style.left = pos.x + 'px';
+                    el.style.top = pos.y + 'px';
+                    el.innerHTML = `<img src="./GameImages/${gameImages[imgIndex]}" style="width:100%; height:100%; object-fit:cover;">`;
+                    gameMap.appendChild(el);
+                }
+
+                // Return door for North room
+                if (currentRoom === 'north') createDoor('bottom');
+                // Connection between north and north2
+                if (currentRoom === 'north') createDoor('top');
+                if (currentRoom === 'north2') createDoor('bottom');
+            }
+            else if (currentRoom === 'south') {
+                // Wood Floor
+                gameMap.style.backgroundImage = 'url("./images/wood_floor.png")';
+                gameMap.style.backgroundSize = '100px 100px';
+
+                // Red Carpet (Vertical from Top)
+                const carpet = document.createElement('div');
+                carpet.style.position = 'absolute';
+                carpet.style.left = '250px'; // Center X
+                carpet.style.top = '0'; // Start at top
+                carpet.style.width = '100px';
+                carpet.style.height = '100%'; // Full height
+                carpet.style.backgroundColor = '#b22222';
+                carpet.style.borderLeft = '4px solid #ffd700'; // Gold trim
+                carpet.style.borderRight = '4px solid #ffd700';
+                gameMap.appendChild(carpet);
+
+                // Return Door
+                createDoor('top');
+
+                // Chest
+                createInteractable(270, 270, 'chest-reasons', '🎁', 'Click Me!');
+            }
+            else if (currentRoom === 'east') {
+                // Wood Floor
+                gameMap.style.backgroundImage = 'url("./images/wood_floor.png")';
+                gameMap.style.backgroundSize = '100px 100px';
+
+                // Red Carpet (Horizontal from Left)
+                const carpet = document.createElement('div');
+                carpet.style.position = 'absolute';
+                carpet.style.left = '0'; // Start at left
+                carpet.style.top = '250px'; // Center Y
+                carpet.style.width = '100%'; // Full width
+                carpet.style.height = '100px';
+                carpet.style.backgroundColor = '#b22222';
+                carpet.style.borderTop = '4px solid #ffd700';
+                carpet.style.borderBottom = '4px solid #ffd700';
+                gameMap.appendChild(carpet);
+
+                // Return Door
+                createDoor('left');
+
+                // Chest
+                createInteractable(270, 270, 'chest-letter', '💌', 'Open Me!');
+            }
+            else if (currentRoom === 'west') {
+                gameMap.style.backgroundColor = '#90ee90'; // Light green
+
+                // Random Trees and Fruits
+                createDecor('tree1', 50, 50, 100, 100, '🌳');
+                createDecor('tree2', 50, 450, 100, 100, '🌳');
+                createDecor('tree3', 450, 50, 100, 100, '🌲');
+                createDecor('tree4', 450, 450, 100, 100, '🌲');
+
+                createDecor('flower1', 200, 100, 50, 50, '🌻');
+                createDecor('flower2', 350, 400, 50, 50, '🌷');
+                createDecor('fruit1', 120, 120, 40, 40, '🍎');
+                createDecor('fruit2', 480, 120, 40, 40, '🍑');
+                createDecor('heart1', 280, 200, 50, 50, '💗');
+                createDecor('bunny', 200, 300, 60, 60, '🐇');
+            }
+            updatePlayerPos();
+        }
+
+        function createDoor(pos) {
+            const d = document.createElement('div');
+            d.className = 'door';
+            if (pos === 'top') { d.style.top = '0'; d.style.left = '250px'; d.style.width = '100px'; d.style.height = '10px'; }
+            if (pos === 'bottom') { d.style.bottom = '0'; d.style.left = '250px'; d.style.width = '100px'; d.style.height = '10px'; }
+            if (pos === 'right') { d.style.right = '0'; d.style.top = '250px'; d.style.width = '10px'; d.style.height = '100px'; }
+            if (pos === 'left') { d.style.left = '0'; d.style.top = '250px'; d.style.width = '10px'; d.style.height = '100px'; }
+            gameMap.appendChild(d);
+        }
+
+        function createDecor(type, x, y, w, h, emoji) {
+            const d = document.createElement('div');
+            d.style.position = 'absolute';
+            d.style.left = x + 'px';
+            d.style.top = y + 'px';
+            d.style.width = w + 'px';
+            d.style.height = h + 'px';
+            d.style.fontSize = '3rem';
+            d.style.textAlign = 'center';
+            d.innerText = emoji;
+            gameMap.appendChild(d);
+        }
+
+        function createInteractable(x, y, id, emoji, label) {
+            const d = document.createElement('div');
+            d.className = 'interactable';
+            d.style.left = x + 'px';
+            d.style.top = y + 'px';
+            d.innerHTML = `<div style="font-size:3rem;">${emoji}</div><div style="font-size:1rem; background:white; padding:2px;">${label}</div>`;
+            d.onclick = () => handleInteraction(id);
+            gameMap.appendChild(d);
+        }
+
+        function handleInteraction(id) {
+            // Check distance? For simplicity, global click if in room.
+            // But we can check if player is close. For now let's just allow it.
+
+            if (id === 'chest-reasons') {
+                showDialog(reasons[reasonsIndex], 'reasons');
+            }
+            if (id === 'chest-letter') {
+                showDialog(`
+<div style="width: 100%; max-width: 100%; text-align: left; padding: 20px; box-sizing: border-box; font-family: 'Indie Flower', cursive; line-height: 1.6; white-space: normal;">
+    <h2 style="text-align: center; color: #d6336c; font-family: 'Pacifico', cursive; margin-top: 0;">Happy Valentines Day ❤️</h2>
+    
+    <p style="margin-bottom: 1em;">Today is a day all about love. But this is familiar for us. For we love each other everyday.
+    With no exception. Every day with you is always filled with love. As the days pass, my love for you grows, 
+    and my soul is more used to peace and joy.</p>
+    
+    <p style="margin-bottom: 1em;">Everyday, I want to show you how much you mean to me. I want to give you all the love my heart has to offer.
+    We may not be perfect. Sometimes we show our flaws. But that's what makes us special. Together we will become one,
+    and our souls will be complete. We look in the same direction of life, no matter how far away we may be, 
+    we will always find our way to each other.</p>
+
+    <p style="margin-bottom: 1em;">Our love has faced many challenges for the last couple of months, but we overcame them all.
+    We will continue to face challenges, and it will only make us stronger.</p>
+    
+    <p style="margin-bottom: 1em;">Thank you for the impact you had on my life. How you changed my life for the better. It means more to me than words can express.
+    So instead of words, I will show you with my actions.</p>
+
+    <p style="margin-bottom: 1em;">Until the day and after we meet, I will always be here for you. I'll keep showing you my love in the smallest things.
+    I may not give you the world, but I will give you my heart that beats everyday with love for you. You will always be my little 
+    princess, that deserves to be spoiled all the time with my love.</p>
+
+    <p style="margin-bottom: 1em;">I have made this world for you. I hope you had fun. I built it just for you.
+    As for me, I already have my world. You are my world. And I enjoy everyday in this world with you.
+    Every moment with you is the most beautiful treasure in my life. You are someone, I hope to build a future with,
+    and keep enjoying the magic of your heart that has enchanted me. You put a spell on me, and I can't get enough of it.</p>
+    
+    <p style="margin-bottom: 2em;">Thank you for being the best lover in the universe.</p>
+    
+    <div style="width: 100%; display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px;">
+        <div style="font-size: 1.5rem; font-weight: bold; text-align: left;">I love you so much,<br>Maks</div>
+        <button onclick="closeDialog()" style="padding: 10px 30px; border: 2px solid #000; background: #fff; cursor: pointer; font-family: 'Indie Flower', cursive; font-size: 1.2rem; box-shadow: 3px 3px 0px #000;">Exit ❤️</button>
+    </div>
+</div>
+                `, 'letter');
+            }
+        }
+
+        const dialogTitle = document.getElementById('dialog-title');
+        const dialogCloseBtn = document.getElementById('dialog-close-btn');
+
+        function showDialog(text, type) {
+            dialogBox.classList.remove('hidden');
+            dialogText.innerHTML = text; // Use innerHTML for formatting
+
+            // Reset classes & visibility
+            dialogBox.classList.remove('love-letter-mode');
+            dialogTitle.classList.add('hidden');
+            nextReasonBtn.classList.add('hidden');
+            dialogCloseBtn.classList.remove('hidden'); // Show default close by default
+
+            if (type === 'reasons') {
+                nextReasonBtn.classList.remove('hidden');
+                dialogTitle.classList.remove('hidden');
+            } else if (type === 'letter') {
+                dialogBox.classList.add('love-letter-mode');
+                dialogCloseBtn.classList.add('hidden'); // Hide default close for letter
+            }
+        }
+
+        function closeDialog() {
+            dialogBox.classList.add('hidden');
+        }
+
+        function nextReason() {
+            reasonsIndex++;
+            if (reasonsIndex >= reasons.length) reasonsIndex = 0; // Loop or end
+            dialogText.innerText = reasons[reasonsIndex];
+        }
+
+    </script>
+</body>
+
+</html>
