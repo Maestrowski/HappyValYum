@@ -576,7 +576,7 @@
     </div>
 
     <!-- Mobile Controls (Outside game screen to keep fixed size/position) -->
-    <div id="mobile-controls">
+    <div id="mobile-controls" class="hidden">
         <div class="dpad-row">
             <button id="btn-up" class="dpad-btn">⬆</button>
         </div>
@@ -1327,6 +1327,10 @@
             // Ensure Phase 3 is visible
             const phase3 = document.getElementById('phase-3');
             if (phase3) phase3.style.display = 'block';
+
+            // Show mobile controls for Phase 3
+            const mobileControls = document.getElementById('mobile-controls');
+            if (mobileControls) mobileControls.classList.remove('hidden');
 
             renderRoom();
             document.addEventListener('keydown', handleInput);
